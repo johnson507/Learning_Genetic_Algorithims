@@ -13,12 +13,12 @@ namespace Utilities
 		/*
 		Returns a sample of elements from a larger population set, without replacement. Leaves the original population unchanged.
 
-		@param population_Input, type T: the larger set to take the sample from.
-		@param k_Length, type int: the size of the returned sample.
-		@return: type T set of k_length samples from the given population_Input;
+		@param: "population_Input" type T, the larger set to take the sample from.
+		@param: "k_Length" type int, the size of the returned sample.
+		@return: type T, set of k_length samples from the given population_Input;
 		*/
 		template<typename T>
-		T Sample(const T* population_Input, unsigned int k_Length)
+		T Sample(T* const population_Input, unsigned int k_Length)
 		{
 			/*
 			0. Check if sample is within range. K must be < than population.
@@ -29,13 +29,11 @@ namespace Utilities
 			5. Repeat until the [1] is satisfied and return the sample set.
 			*/
 
-
-			T dereferenced_Input = *population_Input;
 			T sampleSet;
-			T inputCopy(dereferenced_Input);//make a copy so we don't ruin the population input
+			T inputCopy(*population_Input);//make a copy so we don't ruin the population input
 
 			//EXCEPTION: OUF OF RANGE 
-			if (k_Length > dereferenced_Input.size())
+			if (k_Length > population_Input->size())
 			{
 				cout << "Exception: The requested sample size is greater than the population set." << endl;
 				throw out_of_range("");
