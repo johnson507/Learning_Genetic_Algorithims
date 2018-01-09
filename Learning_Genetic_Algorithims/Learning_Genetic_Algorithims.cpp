@@ -11,10 +11,12 @@
 
 using namespace std;
 
+
+
 int main()
 {
 	clock_t currentTime;// init the time variable
-	StringGuesser guesser;
+	StringGuesser<string> guesser;
 	
 	int average_Generations = 0;
 
@@ -34,7 +36,7 @@ int main()
 	for (int i = 0; i < num_Guesses; ++i)
 	{
 		cout << endl;
-		guesser.Get_Best(guess, genes, guess.length());
+		guesser.Get_Best(&guess, &genes, guess.length());
 		average_Generations += guesser.Get_Generation();
 
 		printf("\nGuess Number: %i/%i", i + 1, num_Guesses);

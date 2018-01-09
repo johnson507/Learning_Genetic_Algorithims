@@ -6,27 +6,29 @@
 using namespace std;
 
 //Chromosomes are containers for the data we're trying to find
+template <typename T>
 class Chromosome
 {
 
 public:
 
 	Chromosome();
-	Chromosome(int fitness, string genes);
+	Chromosome(int fitness, T* genes);
 	~Chromosome();
 
 	//Accessors
 	int Get_Fitness() { return Fitness; };
-	string Get_Genes() { return Genes; };
+	T* Get_Genes() { return &Genes; };
 
 private:
 
 	//variable
 	int Fitness;
-	string Genes;
+	T Genes;
 
 };
 
+template<typename T>
 class StringGuesser
 {
 public:
@@ -34,24 +36,24 @@ public:
 	~StringGuesser();
 
 	//Functions
-	Chromosome Get_Best(string const goal, string const genes, int const optimalFitness);
+	Chromosome<T> Get_Best(T* const goal, T* const genes, int const optimalFitness);
 
 	//Acessors
 	int Get_Generation() const { return generation; };//only let the user access this but not change it
 
 private:
 	//Functions
-	void Display(Chromosome* const guess);
-	int Get_Fitness(string const guess);
-	Chromosome Mutate(string const parent);
-	Chromosome Generate_Parent(int const wordLength);
-	void Init(string const goal, string const genes);
+	void Display(Chromosome<T>* const guess);
+	int Get_Fitness(T* const guess);
+	Chromosome<T> Mutate(T* const parent);
+	Chromosome<T> Generate_Parent(int const wordLength);
+	void Init(T* const goal, T* const genes);
 
 	//Variables
 	clock_t startTime;
-	Chromosome bestParent;
-	string target;
-	string geneSet;
+	Chromosome<T> bestParent;
+	T* target;
+	T* geneSet;
 	int bestFitness;
 	int generation = 0;//how many generations have gone through
 };
