@@ -24,10 +24,19 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Utilities.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericGuesser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="StringGuesser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Utilities.h">
+    <ClInclude Include="IntVectorGuesser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SortedNumbers_Guesser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,10 +47,19 @@
     <ClCompile Include="Learning_Genetic_Algorithims.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Utilities.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GenericGuesser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="StringGuesser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utilities.cpp">
+    <ClCompile Include="IntVectorGuesser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SortedNumbers_Guesser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
