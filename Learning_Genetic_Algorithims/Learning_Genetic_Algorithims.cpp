@@ -90,7 +90,6 @@ int main()
 			InitStringGuesser(num_Guesses);
 		else if (choice == "1")
 			InitOneMaxProblem(num_Guesses);
-		else if (choice == "2")
 	}
 
 

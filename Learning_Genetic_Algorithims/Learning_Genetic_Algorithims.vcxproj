@@ -143,7 +143,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="IntVectorGuesser.h" />
-    <ClInclude Include="SortedNumbers_Guesser.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="GenericGuesser.h" />
     <ClInclude Include="StringGuesser.h" />
@@ -153,7 +152,6 @@
   <ItemGroup>
     <ClCompile Include="IntVectorGuesser.cpp" />
     <ClCompile Include="Learning_Genetic_Algorithims.cpp" />
-    <ClCompile Include="SortedNumbers_Guesser.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="GenericGuesser.cpp" />
     <ClCompile Include="StringGuesser.cpp" />
