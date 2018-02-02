@@ -17,7 +17,7 @@ public:
 	~Chromosome();
 
 	//Accessors
-	int Get_Fitness() { return Fitness; };
+	virtual int Get_Fitness() { return Fitness; };
 	T* Get_Genes() { return &Genes; };
 
 private:

@@ -25,7 +25,7 @@ void DoGuess_Benchmark(int num_Guesses, T* genes, T* guess, U* guesser)
 	for (int i = 0; i < num_Guesses; ++i)
 	{
 		cout << endl;
-		guesser->Get_Best(guess, genes, guess->size());
+		//guesser->Get_Best(guess, genes, guess->size());
 		average_Generations += guesser->Get_Generation();
 
 		printf("\nGuess Number: %i/%i", i + 1, num_Guesses);
