@@ -67,17 +67,6 @@ void InitOneMaxProblem(int num_Guesses)
 	DoGuess_Benchmark(num_Guesses, &genes, &guess, &guesser);
 }
 
-void SortedNumbers(int num_Guesses, int size)
-{
-	SortedNumbers_Guesser<vector<int>> guesser;
-	vector<int> genes;
-	vector<int> guess(10);
-
-	for (size_t i = 0; i < size; i++)
-		genes.push_back(i);
-
-	DoGuess_Benchmark(num_Guesses, &genes, &guess, &guesser);
-}
 
 int main()
 {
@@ -90,7 +79,7 @@ int main()
 
 		string choice;
 
-		cout << "[0] String Gueser\n[1] One Max Problem\n[2] Sorted Numbers\n" << endl;
+		cout << "[0] String Gueser\n[1] One Max Problem\n" << endl;
 		getline(cin, choice);
 
 		int num_Guesses;
@@ -102,7 +91,6 @@ int main()
 		else if (choice == "1")
 			InitOneMaxProblem(num_Guesses);
 		else if (choice == "2")
-			SortedNumbers(num_Guesses, 100);
 	}
 
 

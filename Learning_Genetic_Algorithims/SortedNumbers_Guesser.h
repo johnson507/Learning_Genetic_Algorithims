@@ -12,6 +12,7 @@ public:
 
 private:
 	//Functions
+
 	virtual void Display(Chromosome<T>* const guess);
 	virtual int Get_Fitness(T* const genes) override;
 	//virtual Chromosome<T> Mutate(T* const parent);
