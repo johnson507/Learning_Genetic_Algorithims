@@ -9,7 +9,6 @@
 #include "IntVectorGuesser.h"
 #include "StringGuesser.h"
 #include <ctime>
-#include "SortedNumbers_Guesser.h"
 
 
 using namespace std;
