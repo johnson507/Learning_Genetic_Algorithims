@@ -4,13 +4,45 @@
 #include <ctime>
 #include <string>
 
+
+#pragma region  Fitness_Region
+
+Fitness::Fitness()
+{
+}
+
+Fitness::Fitness(int numbersInSequenceCount, int totalGap)
+{
+	_numbersInSequenceCount = numbersInSequenceCount;
+	_totalGap = totalGap;
+}
+
+Fitness::~Fitness()
+{
+}
+
+//To avoid the other equilency operators, various logical tricks are used
+bool Fitness::operator>(const Fitness * fitnessB)
+{
+	if (this->_numbersInSequenceCount != fitnessB->Get_CountOfNumbers())
+		return  (this->_numbersInSequenceCount > fitnessB->Get_CountOfNumbers());
+	else
+		return this->_totalGap < fitnessB->Get_TotalGap();//this is a greater fitness because it brings us closer to the answer
+}
+
+string Fitness::To_String()
+{
+	return "Sequential: " + to_string(_numbersInSequenceCount) + " Total Gap: " + to_string(_totalGap);
+}
+#pragma endregion
+
 template<typename T>
 Chromosome<T>::Chromosome() {}
 
 template<typename T>
-Chromosome<T>::Chromosome(int const fitness, T* const genes)
+Chromosome<T>::Chromosome(Fitness const fitness, T* const genes)
 {
-	Fitness = fitness;
+	_fitness = fitness;
 	Genes = *genes;
 }
 
@@ -46,34 +78,72 @@ Given a set of genes, the algorithim will return an optimal solution.
 @return: the chromosome of the child
 */
 template<typename T>
-Chromosome<T> GenericGuesser<T>::Get_Best(T* const goal, T* const genes, int const optimalFitness)
+Chromosome<T> GenericGuesser<T>::Get_Best(T * const goal, T * const genes, const Fitness* optimalFitness)
 {
 	Init(goal, genes);
 
-	Chromosome<T> child;
+	auto derefOptimalFitness = *optimalFitness;
 
-	while (true)//loop until the solution is found
+	if (!(derefOptimalFitness > &bestParent.Get_Fitness()))
+		return bestParent;
+
+	while (true)
 	{
-		generation++;
-		child = Mutate(bestParent.Get_Genes());
+		Chromosome<T> child = Mutate(bestParent.Get_Genes());
+		++generation;
 
-		if (bestFitness >= child.Get_Fitness())//kill this generation if its no better
+		if (bestParent.Get_Fitness() > &child.Get_Fitness())//discard smaller children
 			continue;
+		if (!(child.Get_Fitness() > &bestParent.Get_Fitness()))//if the child is equal, use it
+		{
+			bestParent = child;
+			continue;
+		}
 
 		Display(&child);
 
-		if (child.Get_Fitness() >= optimalFitness)//end when found solution
-			break;
+		if (!(derefOptimalFitness > &child.Get_Fitness()))
+			return child;
 
-		bestFitness = child.Get_Fitness();
-		bestParent = child;//now the best child becomes a parent
+		bestParent = child;
 	}
+}
 
-	return child;//the target solution
+
+
+template<typename T>
+void GenericGuesser<T>::Display(Chromosome<T>* const guess)
+{
+	clock_t currentTime = clock() - startTime;
+	float deltaTime = (float)currentTime / CLOCKS_PER_SEC;
+
+	string result = "[ ";
+
+	for (auto it = guess->Get_Genes()->begin(); it != guess->Get_Genes()->end(); ++it)
+		result += to_string(*it) + ", ";
+
+	result += "]";
+
+	printf("%s Seconds: %f Fitness: %s  Generation: %i \n", result.c_str(), deltaTime, guess->Get_Fitness().To_String().c_str(), generation);
 }
 
 template<typename T>
-void GenericGuesser<T>::Display(Chromosome<T>* const guess){}
+//Returns a count of the adjacent numbers in ascending order
+Fitness GenericGuesser<T>::Get_Fitness(T * const guess)
+{
+	int fitness = 1;//start as once since the inital position dosent have a gene to the left ie correct by default
+	int gap = 0;
+
+	for (size_t i = 1; i < guess->size(); i++)
+	{
+		if (guess->at(i) > guess->at(i - 1))
+			++fitness;
+		else
+			gap += guess->at(i - 1) - guess->at(i);
+	}
+
+	return Fitness(fitness, gap);
+}
 
 //MUTATE
 /*
@@ -99,30 +169,11 @@ Chromosome<T> GenericGuesser<T>::Mutate(T* const parentGenes)
 	childGenes[index] = (newGene == childGenes[index]) ? alternate : newGene;//replace the corresponding index with the randomly chosen char
 
 	T* genes = &childGenes;
-	int fitness = Get_Fitness(genes);
+	Fitness fitness = Get_Fitness(genes);
 
 	return Chromosome<T>(fitness, genes);//the child genes are now mutated from the original parent
 }
 
-/*
-Loops through the guess and the actual value and compare each value, adding the sum of each correct guess
-
-@param: "guess", the input we are getting the fitness for, in comparison to the target variable
-@return: the fitness of the input
-*/
-template<typename T>
-int GenericGuesser<T>::Get_Fitness(T* const guess)
-{
-	int fitness_Sum = 0;
-
-	for (int i = 0; i < guess->size(); ++i)
-	{
-		if (guess->at(i) == target->at(i))
-			fitness_Sum++;
-	}
-
-	return fitness_Sum;
-}
 
 /*
 Creates the first generation to the required size.
@@ -143,7 +194,7 @@ Chromosome<T> GenericGuesser<T>::Generate_Parent(int const wordLength)
 		genes.insert(genes.end(), newGenes.begin(), newGenes.end());
 	}
 
-	int fitness = Get_Fitness(&genes);
+	Fitness fitness = Get_Fitness(&genes);
 
 	return Chromosome<T>(fitness, &genes);
 }

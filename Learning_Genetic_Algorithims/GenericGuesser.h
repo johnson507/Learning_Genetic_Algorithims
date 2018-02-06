@@ -5,6 +5,32 @@
 
 using namespace std;
 
+
+class Fitness
+{
+public:
+	Fitness();
+	Fitness(int numbersInSequenceCount, int totalGap);
+	~Fitness();
+
+	bool operator>(const Fitness* fitnessB);
+
+	int Get_CountOfNumbers() const
+	{
+		return _numbersInSequenceCount;
+	};
+	int Get_TotalGap() const
+	{
+		return _totalGap;
+	};
+
+	string To_String();
+
+private:
+	int _totalGap;
+	int _numbersInSequenceCount;
+};
+
 //Chromosomes are containers for the data we're trying to find
 template <typename T>
 class Chromosome
@@ -13,17 +39,17 @@ class Chromosome
 public:
 
 	Chromosome();
-	Chromosome(int fitness, T* genes);
+	Chromosome(Fitness fitness, T* genes);
 	~Chromosome();
 
 	//Accessors
-	virtual int Get_Fitness() { return Fitness; };
+	virtual Fitness Get_Fitness() { return _fitness; };
 	T* Get_Genes() { return &Genes; };
 
 private:
 
 	//variable
-	int Fitness;
+	Fitness _fitness;
 	T Genes;
 
 };
@@ -39,7 +65,7 @@ public:
 	~GenericGuesser();
 
 	//Functions
-	Chromosome<T> Get_Best(T* const goal, T* const genes, int const optimalFitness);
+	Chromosome<T> Get_Best(T* const goal, T* const genes, const Fitness* optimalFitness);
 
 	//Acessors
 	int Get_Generation() const { return generation; };//only let the user access this but not change it
@@ -47,7 +73,7 @@ public:
 protected:
 	//Functions
 	virtual void Display(Chromosome<T>* const guess);
-	virtual int Get_Fitness(T* const guess);
+	virtual Fitness Get_Fitness(T* const guess);
 	virtual Chromosome<T> Mutate(T* const parent);
 	virtual Chromosome<T> Generate_Parent(int const wordLength);
 	void Init(T* const goal, T* const genes);
@@ -57,7 +83,7 @@ protected:
 	Chromosome<T> bestParent;
 	T* target;
 	T* geneSet;
-	int bestFitness;
+	Fitness bestFitness;
 	int generation = 0;//how many generations have gone through
 };
 
