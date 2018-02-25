@@ -3,7 +3,7 @@
 #include <random>
 #include <ctime>
 #include <string>
-
+#include <set>
 
 #pragma region  Fitness_Region
 
@@ -11,10 +11,9 @@ Fitness::Fitness()
 {
 }
 
-Fitness::Fitness(int numbersInSequenceCount, int totalGap)
+Fitness::Fitness(int totalQueens)
 {
-	_numbersInSequenceCount = numbersInSequenceCount;
-	_totalGap = totalGap;
+	_totalQueens = totalQueens;
 }
 
 Fitness::~Fitness()
@@ -24,15 +23,12 @@ Fitness::~Fitness()
 //To avoid the other equilency operators, various logical tricks are used
 bool Fitness::operator>(const Fitness * fitnessB)
 {
-	if (this->_numbersInSequenceCount != fitnessB->Get_CountOfNumbers())
-		return  (this->_numbersInSequenceCount > fitnessB->Get_CountOfNumbers());
-	else
-		return this->_totalGap < fitnessB->Get_TotalGap();//this is a greater fitness because it brings us closer to the answer
+	return _totalQueens < fitnessB->Get_TotalQueens();
 }
 
 string Fitness::To_String()
 {
-	return "Sequential: " + to_string(_numbersInSequenceCount) + " Total Gap: " + to_string(_totalGap);
+	return "Total Queens: " + to_string(_totalQueens);
 }
 #pragma endregion
 
@@ -57,13 +53,13 @@ GenericGuesser<T>::~GenericGuesser() {}
 
 
 template<typename T>
-void GenericGuesser<T>::Init(T* const goal, T* const genes)
+void GenericGuesser<T>::Init(int const targetLength, T* const genes)
 {
 	startTime = clock();
 	generation = 0;
-	target = goal;
 	geneSet = genes;
-	bestParent = Generate_Parent(target->size());
+	_targetLength = targetLength;
+	bestParent = Generate_Parent(_targetLength);
 	bestFitness = bestParent.Get_Fitness();
 
 	Display(&bestParent);//show the inital starting gene
@@ -78,9 +74,9 @@ Given a set of genes, the algorithim will return an optimal solution.
 @return: the chromosome of the child
 */
 template<typename T>
-Chromosome<T> GenericGuesser<T>::Get_Best(T * const goal, T * const genes, const Fitness* optimalFitness)
+Chromosome<T> GenericGuesser<T>::Get_Best(int const targetLength, T * const genes, const Fitness* optimalFitness)
 {
-	Init(goal, genes);
+	Init(targetLength, genes);
 
 	auto derefOptimalFitness = *optimalFitness;
 
@@ -117,6 +113,10 @@ void GenericGuesser<T>::Display(Chromosome<T>* const guess)
 	clock_t currentTime = clock() - startTime;
 	float deltaTime = (float)currentTime / CLOCKS_PER_SEC;
 
+	Board board(guess->Get_Genes(), _targetLength / 2);
+
+	cout << board.Print_Board() << endl;
+
 	string result = "[ ";
 
 	for (auto it = guess->Get_Genes()->begin(); it != guess->Get_Genes()->end(); ++it)
@@ -131,18 +131,38 @@ template<typename T>
 //Returns a count of the adjacent numbers in ascending order
 Fitness GenericGuesser<T>::Get_Fitness(T * const guess)
 {
-	int fitness = 1;//start as once since the inital position dosent have a gene to the left ie correct by default
-	int gap = 0;
+	int size = _targetLength / 2;
 
-	for (size_t i = 1; i < guess->size(); i++)
+	Board board(guess, size);
+
+	//sets only have unique elements, thus by inserting the position of the queen, we can count how many times the queens are on an attacking path 
+	//since they wont be added if they are
+	set<int> rowsWithQueens;
+	set<int> columnsWithQueens;
+	set<int> northeastDiagonalWithQueens;
+	set<int> southeastDiagonalWithQueens;
+
+	for (size_t row = 0; row < size; row++)
 	{
-		if (guess->at(i) > guess->at(i - 1))
-			++fitness;
-		else
-			gap += guess->at(i - 1) - guess->at(i);
+		for (size_t column = 0; column < size; column++)
+		{
+			if (board.Get_Board()[column][row] == 'Q')
+			{
+				rowsWithQueens.insert(row);
+				columnsWithQueens.insert(column);
+				northeastDiagonalWithQueens.insert(row + column);
+				southeastDiagonalWithQueens.insert(size - 1 - row + column);
+			}
+		}
 	}
 
-	return Fitness(fitness, gap);
+
+	int totalQueens = size - rowsWithQueens.size() +			\
+		size - columnsWithQueens.size() +						\
+		size - northeastDiagonalWithQueens.size() +				\
+		size - southeastDiagonalWithQueens.size();				
+
+	return Fitness(totalQueens);
 }
 
 //MUTATE
@@ -199,8 +219,58 @@ Chromosome<T> GenericGuesser<T>::Generate_Parent(int const wordLength)
 	return Chromosome<T>(fitness, &genes);
 }
 
-template class GenericGuesser<string>;
-template class Chromosome<string>;
 
 template class GenericGuesser<vector<int>>;
 template class Chromosome<vector<int>>;
+
+
+Board::Board(vector<int>* genes, int size)
+{
+	_boardSize = size;
+	char** board = new char*[size];
+
+	//A 2D array is an array of pointers, where each pointer points to value based arrays of the actual objects
+
+	for (size_t i = 0; i < size; i++)//create an array dynamically
+		board[i] = new char[size];
+
+	for (size_t column = 0; column < size; column++)
+	{
+		for (size_t row = 0; row < size; row++)
+		{
+			board[column][row] = '.';
+		}
+	}
+
+	for (size_t i = 0; i < genes->size(); i += 2)
+	{
+		int row = genes->at(i);
+		int column = genes->at(i + 1);
+		board[column][row] = 'Q';
+	}
+
+	_board = board;
+}
+
+Board::~Board()
+{
+	delete _board;
+}
+
+string Board::Print_Board()
+{
+	string result = "";
+
+	for (size_t y = 0; y < _boardSize; y++)
+	{
+		for (size_t x = 0; x < _boardSize; x++)
+		{
+			result += _board[x][y];
+
+			if (x == _boardSize - 1)
+				result += "\n";
+		}
+	}
+
+	return result;
+}

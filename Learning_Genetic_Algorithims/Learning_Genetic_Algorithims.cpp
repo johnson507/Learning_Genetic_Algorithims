@@ -13,7 +13,7 @@ using namespace std;
 
 /**/
 template <class T, class U>
-void DoGuess_Benchmark(int num_Guesses, T* genes, T* guess, U* guesser)
+void DoGuess_Benchmark(int num_Guesses, T* genes, int size, U* guesser)
 {
 	clock_t currentTime;// init the time variable
 	currentTime = clock();//now start the time variable so the countdown only considers the algorithm
@@ -21,10 +21,10 @@ void DoGuess_Benchmark(int num_Guesses, T* genes, T* guess, U* guesser)
 
 	for (int i = 0; i < num_Guesses; ++i)
 	{
-		Fitness optimalFitness(guess->size(), 0);//we want to sort 10 numbers	
+		Fitness optimalFitness(0);
 
 		cout << endl;
-		guesser->Get_Best(guess, genes, &optimalFitness);
+		guesser->Get_Best(size * 2, genes, &optimalFitness);
 		average_Generations += guesser->Get_Generation();
 
 		printf("\nGuess Number: %i/%i", i + 1, num_Guesses);
@@ -41,16 +41,15 @@ void DoGuess_Benchmark(int num_Guesses, T* genes, T* guess, U* guesser)
 }
 
 
-void SortedNumbers(int num_Guesses, int size)
+void EightQueens(int num_Guesses, int size)
 {
 	GenericGuesser<vector<int>> guesser;
 	vector<int> genes;
-	vector<int> guess(10);
 
-	for (size_t i = 0; i < size; i++)//genes are numbers 0-99
+	for (size_t i = 0; i < size; i++)//genes are numbers 0-7
 		genes.push_back(i);
 
-	DoGuess_Benchmark(num_Guesses, &genes, &guess, &guesser);
+	DoGuess_Benchmark(num_Guesses, &genes, size, &guesser);
 }
 
 int main()
@@ -64,7 +63,7 @@ int main()
 
 		string choice;
 
-		cout << "[0] Sorted Numbers\n" << endl;
+		cout << "[0] 8 Queens Problem\n" << endl;
 		getline(cin, choice);
 
 		int num_Guesses;
@@ -72,7 +71,7 @@ int main()
 		cin >> num_Guesses;
 
 		if (choice == "0")
-			SortedNumbers(num_Guesses, 100);
+			EightQueens(num_Guesses, 8);
 	}
 
 
